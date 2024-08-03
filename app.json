@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "plugins": [
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsImpl": "mapbox",
+          "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoia2l3eW1vbnp5IiwiYSI6ImNsemJuZ205bTAyNm0ya3BuNTB5MnBiZHAifQ.t_t1QkkFrK39LD33PJLwGg"
+        }
+      ]
+    ]
+  }
+}
