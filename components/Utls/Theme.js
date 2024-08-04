@@ -55,6 +55,7 @@ export const SIZES = {
   body2: 20,
   body3: 16,
   body4: 14,
+    body44: 10,
   body5: 16,
   body6: 25,
 
@@ -92,8 +93,12 @@ export const FONTS = {
   },
   body4: {
     fontFamily: 'Roboto-Regular',
-    fontSize: SIZES.body4,
-    lineHeight: 22,
+    fontSize: SIZES.body44,
+  },
+    body44: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 8,
+    lineHeight: 10,
   },
   body5: {
     fontFamily: 'Roboto-Regular',

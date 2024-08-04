@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, FONTS, SIZES, icons, images } from '../Utls';
 
 const ProductInfo = ({route, navigation}) => {
-  const {productID} = route.params;
+  const {serviceID} = route.params;
 
   const [product, setProduct] = useState({});
 
@@ -41,7 +41,7 @@ const ProductInfo = ({route, navigation}) => {
 
   const getDataFromDB = async () => {
     for (let index = 0; index < Items.length; index++) {
-      if (Items[index].id == productID) {
+      if (Items[index].id == serviceID) {
         await setProduct(Items[index]);
         return;
       }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { HomeScreen, SettingScreen, LoginScreen, MapScreen, OldHome } from '../Screens';
+import { HomeScreen, BusinessConfigScreen, SettingScreen, LoginScreen, MapScreen } from '../Screens';
 import { COLORS, FONTS, icons } from '../Utls';
 
 const Tab = createBottomTabNavigator();
@@ -41,7 +41,7 @@ const Tabs = () => {
           switch (route.name) {
             case 'Home':
               return (
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ alignItems: 'center', justifyContent: 'space-between' ,maxWidth: 300 }}>
                   <Image
                     source={icons.home}
                     resizeMode="contain"
@@ -56,7 +56,7 @@ const Tabs = () => {
               );
             case 'Login':
               return (
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ alignItems: 'center' , justifyContent: 'space-between',maxWidth: 300 }}>
                   <Image
                     source={icons.profile}
                     resizeMode="contain"
@@ -73,7 +73,7 @@ const Tabs = () => {
               );
             case 'Setting':
               return (
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ alignItems: 'center', justifyContent: 'space-between',maxWidth: 300  }}>
                   <Image
                     source={icons.settings}
                     resizeMode="contain"
@@ -84,13 +84,13 @@ const Tabs = () => {
                     }}
                   />
                   <Text style={{ ...FONTS.body4, color: tintColor }}>
-                    Settings
+                    Config
                   </Text>
                 </View>
               );
             case 'Map':
               return (
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ alignItems: 'center', justifyContent: 'space-between',maxWidth: 300   }}>
                   <Image
                     source={icons.map}
                     resizeMode="contain"
@@ -108,7 +108,7 @@ const Tabs = () => {
       })}>
       <Tab.Screen
         name="Home"
-        component={OldHome}
+        component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
         }}
@@ -129,7 +129,7 @@ const Tabs = () => {
       />
       <Tab.Screen
         name="Setting"
-        component={SettingScreen}
+        component={BusinessConfigScreen}
         options={{
           tabBarLabel: 'Setting',
         }}

@@ -1,76 +1,21 @@
-// components/Screens/SettingScreen.js
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-} from 'react-native';
-import AuthRepository from '../Repositories/AuthRepository';
-import BannerRepository from '../Repositories/BannerRepository';
-import BusinessConfig from '../Models/BusinessConfig';
+import React from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { useBusinessConfig } from '../../context/BusinessConfigContext';
 import { COLORS } from '../Utls';
 
-const SettingScreen = () => {
-  const [businessConfig, setBusinessConfig] = useState(null); // Change to null or a specific type if using TypeScript
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchBusinessConfig = async () => {
-      try {
-        const config = await AuthRepository.getBusinessConfig();
-        setBusinessConfig(config);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBusinessConfig();
-  }, [setBusinessConfig, setError]); // Include state setters in the dependency array
-
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
-  if (error) {
-    return <Text>Error: {error}</Text>;
-  }
+const BusinessConfigScreen = () => {
+  const { businessConfig } = useBusinessConfig();
 
   if (!businessConfig) {
-    return <Text>No configuration data available</Text>;
+    return (
+      <View style={styles.container}>
+        <Text>No configuration data available.</Text>
+      </View>
+    );
   }
 
-  const handleBanner = async () => {
-    setLoading(true);
-    try {
-      const params = {
-        limit: 10,
-        offset: 1,
-      };
-      const banner = await BannerRepository.index(params);
-      setError(banner.message);
-      setData(banner);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        backgroundColor: COLORS.khak,
-      }}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.header}>Business Configuration</Text>
         <Text style={styles.sectionTitle}>
@@ -105,15 +50,18 @@ const SettingScreen = () => {
           </Text>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 16,
+    paddingVertical:30,
+    backgroundColor: COLORS.khak,
   },
-  header: {
+    header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
@@ -135,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingScreen;
+export default BusinessConfigScreen;

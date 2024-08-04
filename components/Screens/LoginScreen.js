@@ -14,7 +14,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthRepository from '../Repositories/AuthRepository';
 import * as Crypto from 'expo-crypto';
-import { COLORS } from '../Utls/Theme';
+import { COLORS } from '../Utls';
 import Config from './../Utls/Config';
 
 const LoginScreen = ({ navigation }) => {

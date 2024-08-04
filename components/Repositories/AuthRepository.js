@@ -50,6 +50,7 @@ class AuthRepository {
       //console.log("________________________");
       return token;
     } catch (error) {
+      navigation.replace('Login');
       console.error('Error retrieving token:', error);
       throw error;
     }
@@ -57,11 +58,7 @@ class AuthRepository {
 
   static async getBusinessConfig() {
     try {
-      const token = await AsyncStorage.getItem('userToken');
-      if (!token) {
-        throw new Error('No token found');
-      }
-      const response = await AuthProvider.getBusinessConfig(token);
+      const response = await AuthProvider.getBusinessConfig(this.getToken());
       if (response.response_code === 'default_200') {
         const businessConfig = BusinessConfig.fromJson(response);
         //console.log(businessConfig.content.business_name);

@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Tabs from './components/Navigation/Tabs';
-import { SettingScreen, RegisterScreen, LoginScreen, MyCart, OldHome, ProductInfo } from './components/Screens';
+import { View, Platform, StyleSheet } from 'react-native';
+import AppNavigator from './components/Navigation/AppNavigator';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import { useFonts } from 'expo-font';
+import { BusinessConfigProvider } from './context/BusinessConfigContext';
+import { COLORS } from './components/Utls';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 const Stack = createStackNavigator();
 const theme = {
   ...DefaultTheme,
+  roundness: 2,
   colors: {
     ...DefaultTheme.colors,
     border: 'transparent',
@@ -34,6 +37,8 @@ export default function App() {
       }
     }
     getLocation();
+    // Lock orientation to portrait
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
   }, []);
 
   if (!fontsLoaded) {
@@ -42,23 +47,26 @@ export default function App() {
 
   return (
     <NavigationContainer theme={theme}>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          headerStyle: {
-            backgroundColor: '#F96D41',
-          },
-        }}
-        initialRouteName="Home"
-      >
-        <Stack.Screen name="Home" component={Tabs} />
-        <Stack.Screen name="Settings" component={SettingScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="MyCart" component={MyCart} />
-        <Stack.Screen name="OldHome" component={OldHome} />
-        <Stack.Screen name="ProductInfo" component={ProductInfo} />
-      </Stack.Navigator>
+      <View style={styles.safeArea}>
+        <BusinessConfigProvider>
+          <View style={styles.container}>
+            <AppNavigator />
+          </View>
+        </BusinessConfigProvider>
+      </View>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.khak,
+  },
+  container: {
+    flex: 1,
+    maxWidth: Platform.OS === 'web' ? 600 : '100%',
+    width: '100%',
+    alignSelf: 'center',
+  },
+});

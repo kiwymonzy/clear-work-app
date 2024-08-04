@@ -1,5 +1,9 @@
 {
   "expo": {
+    "name": "Clearwork",
+    "slug": "clearwork",
+    "version": "1.0.0",
+    "sdkVersion": "51.0.0",
     "plugins": [
       [
         "@rnmapbox/maps",
@@ -8,6 +12,32 @@
           "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoia2l3eW1vbnp5IiwiYSI6ImNsemJuZ205bTAyNm0ya3BuNTB5MnBiZHAifQ.t_t1QkkFrK39LD33PJLwGg"
         }
       ]
-    ]
+    ],
+    "platforms": ["ios", "android"],
+    "orientation": "portrait",
+    "icon": "./assets/icons/apple.png",
+    "splash": {
+      "image": "./assets/icons/apple.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/apple.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/icons/apple.png"
+    }
   }
 }
