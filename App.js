@@ -8,6 +8,7 @@ import { useFonts } from 'expo-font';
 import { BusinessConfigProvider } from './context/BusinessConfigContext';
 import { COLORS } from './components/Utls';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import CartScreen from './components/Screens/CartScreen';
 
 const Stack = createStackNavigator();
 const theme = {
@@ -50,7 +51,7 @@ export default function App() {
       <View style={styles.safeArea}>
         <BusinessConfigProvider>
           <View style={styles.container}>
-            <AppNavigator />
+            <CartScreen />
           </View>
         </BusinessConfigProvider>
       </View>
