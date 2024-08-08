@@ -6,11 +6,11 @@ import {
   RegisterScreen,
   LoginScreen,
   MyCart,
-  OldHome,
   ProductInfo,
   LoadingScreen,
   BusinessConfigScreen,
   ServiceScreen,
+  CategoryScreen,
 } from './../Screens';
 import Tabs from './Tabs';
 const Stack = createStackNavigator();
@@ -32,7 +32,8 @@ const AppNavigator = () => (
     <Stack.Screen name="Login" component={LoginScreen} />
     <Stack.Screen name="MyCart" component={MyCart} />
     <Stack.Screen name="ProductInfo" component={ProductInfo} />
-        <Stack.Screen name="ServiceScreen" component={ServiceScreen} />
+    <Stack.Screen name="ServiceScreen" component={ServiceScreen} />
+    <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
   </Stack.Navigator>
 );
 //    <NavigationContainer theme={theme}>

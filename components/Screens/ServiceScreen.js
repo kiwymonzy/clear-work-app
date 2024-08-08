@@ -1,73 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet,
   View,
   Text,
-  Image,
+  ImageBackground,
   TouchableOpacity,
-  Linking,
+  Image,
   ScrollView,
   Modal,
-  TouchableWithoutFeedback,
   Button,
+  StyleSheet,
+  Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { FONTS, COLORS, SIZES, icons } from '../Utls';
+import HTML from 'react-native-render-html';
 import HTMLView from 'react-native-htmlview';
-import { images, icons, COLORS, FONTS, SIZES } from '../Utls';
-import BackButton from '../Item/BackButton';
-import Background from '../Item/Background';
-import { Entypo, FontAwesome } from '@expo/vector-icons';
-const preprocessHTML = (html) => {
-  // Replace multiple line breaks with a single newline
-  return html.replace(/(\r\n|\n|\r){2,}/g, '\n');
-};
+
+const LineDivider = () => (
+  <View style={{ width: 1, paddingVertical: 5 }}>
+    <View
+      style={{
+        flex: 1,
+        borderLeftColor: COLORS.lightGray2,
+        borderLeftWidth: 1,
+      }}
+    />
+  </View>
+);
+
 const StarReview = ({ rate }) => {
-  var starComponents = [];
-  var fullStar = Math.floor(rate);
-  var noStar = Math.floor(5 - rate);
-  var halfStar = 5 - fullStar - noStar;
+  const starComponents = [];
+  const fullStar = Math.floor(rate);
+  const noStar = Math.floor(5 - rate);
+  const halfStar = 5 - fullStar - noStar;
 
   // Full Star
-  for (var i = 0; i < fullStar; i++) {
+  for (let i = 0; i < fullStar; i++) {
     starComponents.push(
       <Image
         key={`full-${i}`}
         source={icons.starFull}
         resizeMode="cover"
-        style={{
-          width: 20,
-          height: 20,
-        }}
+        style={{ width: 20, height: 20 }}
       />
     );
   }
 
   // Half Star
-  for (var h = 0; h < halfStar; h++) {
+  for (let h = 0; h < halfStar; h++) {
     starComponents.push(
       <Image
         key={`half-${h}`}
         source={icons.starHalf}
         resizeMode="cover"
-        style={{
-          width: 20,
-          height: 20,
-        }}
+        style={{ width: 20, height: 20 }}
       />
     );
   }
 
   // No Star
-  for (var u = 0; u < noStar; u++) {
+  for (let u = 0; u < noStar; u++) {
     starComponents.push(
       <Image
         key={`empty-${u}`}
         source={icons.starEmpty}
         resizeMode="cover"
-        style={{
-          width: 20,
-          height: 20,
-        }}
+        style={{ width: 20, height: 20 }}
       />
     );
   }
@@ -75,89 +72,133 @@ const StarReview = ({ rate }) => {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       {starComponents}
-      <Text
-        style={{ marginLeft: SIZES.base, color: COLORS.gray, ...FONTS.body3 }}>
-        {rate}.0
+      <Text style={{ marginLeft: SIZES.base, color: COLORS.gray, ...FONTS.body3 }}>
+        {rate.toFixed(1)}
       </Text>
     </View>
   );
 };
 
-const IconLabel = ({ icon, label }) => {
-  return (
-    <View style={{ alignItems: 'center' }}>
-      <Image
-        source={icon}
-        resizeMode="cover"
-        style={{
-          width: 50,
-          height: 50,
-        }}
-      />
-      <Text
-        style={{ marginTop: SIZES.padding, color: COLORS.white, ...FONTS.h3 }}>
-        {label}
-      </Text>
-    </View>
-  );
-};
-
-const ServiceScreen = ({ navigation, route }) => {
-  const { data } = route.params;
-  const [selectedTab, setSelectedTab] = useState('overview');
+const ServiceScreen = ({ route, navigation }) => {
+  const [selectedTab, setSelectedTab] = useState('Overview');
+  const [book, setBook] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const IconLabel = ({ label }) => (
+    <View style={{ alignItems: 'center' }}>
+      <TouchableOpacity onPress={() => setSelectedTab(label)}>
+        <Text
+          style={[
+            { marginTop: SIZES.padding, fontSize: 30, fontWeight: 'bold' },
+            { color: selectedTab === label ? COLORS.bgRed : COLORS.white },
+          ]}
+        >
+          {label}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   const handleBookService = () => {
     setModalVisible(true);
   };
 
   const handleRequestService = () => {
-    console.log('Service ID:', data.id);
-    console.log(
-      'Discount Amount:',
-      data.service_discount[0].discount.discount_amount
-    );
-    // Add your code to handle the service request here
+    console.log('Service ID:', book.id);
+    console.log('Discount Amount:', book.service_discount[0].discount.discount_amount);
     setModalVisible(false);
   };
 
-  return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={{ flex: 2 }}>
-        <Image
-          source={{ uri: data.cover_image_full_path }}
+  useEffect(() => {
+    const { data } = route.params;
+    setBook(data);
+  }, [route]);
+
+  function renderBookInfoSection() {
+    return (
+      <View style={{ flex: 1 }}>
+        <ImageBackground
+          source={{ uri: book.cover_image_full_path }}
           resizeMode="cover"
           style={{
-            width: '100%',
-            height: '50%',
-            borderBottomLeftRadius: 30,
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
             borderBottomRightRadius: 30,
+            borderBottomLeftRadius: 30,
           }}
         />
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingHorizontal: SIZES.radius,
+            height: 80,
+            alignItems: 'flex-end',
+          }}
+        >
+          <TouchableOpacity
+            style={{ marginLeft: SIZES.base }}
+            onPress={() => navigation.goBack()}
+          >
+            <Image
+              source={icons.back_arrow_icon}
+              resizeMode="contain"
+              style={{
+                width: 25,
+                height: 25,
+                tintColor: COLORS.white,
+              }}
+            />
+          </TouchableOpacity>
+
+          <View
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Text style={{ ...FONTS.h3, color: COLORS.black }}></Text>
+          </View>
+
+          <TouchableOpacity
+            style={{ marginRight: SIZES.base }}
+            onPress={() => console.log('Click More')}
+          >
+            <Image
+              source={icons.more_icon}
+              resizeMode="contain"
+              style={{
+                width: 30,
+                height: 30,
+                tintColor: COLORS.white,
+                alignSelf: 'flex-end',
+              }}
+            />
+          </TouchableOpacity>
+        </View>
 
         <View
           style={[
             {
               position: 'absolute',
-              top: '30%',
+              bottom: '5%',
               left: '5%',
               right: '5%',
-              borderRadius: 37,
+              borderRadius: 15,
               padding: SIZES.padding,
               backgroundColor: COLORS.white,
             },
             styles.shadow,
-          ]}>
+          ]}
+        >
           <View style={{ flexDirection: 'row' }}>
             <View style={styles.shadow}>
               <Image
-                source={{ uri: data.thumbnail_full_path }}
+                source={{ uri: book.thumbnail_full_path }}
                 resizeMode="cover"
                 style={{
-                  width: 90,
-                  height: 90,
-                  borderRadius: 25,
+                  width: 70,
+                  height: 70,
+                  borderRadius: 15,
                 }}
               />
             </View>
@@ -166,205 +207,172 @@ const ServiceScreen = ({ navigation, route }) => {
               style={{
                 marginHorizontal: SIZES.radius,
                 justifyContent: 'space-around',
-              }}>
-              <Text style={{ ...FONTS.h3 }}>{data.name}</Text>
+              }}
+            >
+              <Text style={{ ...FONTS.h3 }}>{book.name}</Text>
               <Text style={{ color: COLORS.gray, ...FONTS.body3 }}>
                 Tanzania
               </Text>
 
-              <StarReview rate={data.rating_count} />
+              <StarReview rate={book.rating_count} />
             </View>
           </View>
 
           <View style={{ marginTop: SIZES.radius }}>
-            <Text style={{ color: COLORS.gray, ...FONTS.body3 }}>
-              {data.short_description}
-            </Text>
+            <Text style={{ color: COLORS.gray }}>{book.short_description}</Text>
           </View>
         </View>
       </View>
+    );
+  }
 
-      {/* Body */}
-      <View
-        style={[
-          {
-            flex: 1.5,
-            position: 'absolute',
-            top: '45%',
-            left: '5%',
-            right: '5%',
-          },
-          styles.shadow,
-        ]}>
-        {/* Icons */}
+  function renderBookDescription() {
+    return (
+      <View>
         <View
           style={{
             flexDirection: 'row',
-            paddingHorizontal: SIZES.padding * 2,
+            margin: 0,
+            paddingHorizontal: SIZES.padding * 4,
             justifyContent: 'space-between',
-          }}>
-          <IconLabel icon={icons.childsport} label="OverView" />
-          <IconLabel icon={icons.childsport} label="Provider" />
-          <IconLabel icon={icons.childsport} label="FAQs" />
+            backgroundColor: COLORS.black,
+            paddingTop: 20,
+            paddingBottom: 20,
+          }}
+        >
+          <IconLabel label="Overview" />
+          <IconLabel label="Provider" />
         </View>
 
-        {/* About */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{
-            marginTop: SIZES.padding,
-            paddingHorizontal: SIZES.padding,
-          }}>
-          <View style={{ flex: 1 }}>
-            <View
-              style={{
-                color: COLORS.black,
-                flexDirection: 'row',
-                backgroundColor: COLORS.primary,
-                justifyContent: 'space-between',
-              }}>
-              <TouchableOpacity onPress={() => setSelectedTab('overview')}>
-                <Text
-                  style={{
-                    ...FONTS.h2,
-                    fontWeight: selectedTab === 'overview' ? 'bold' : 'normal',
-                  }}>
-                  Service Overview
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setSelectedTab('provider')}>
-                <Text
-                  style={{
-                    ...FONTS.h2,
-                    fontWeight: selectedTab === 'overview' ? 'bold' : 'normal',
-                  }}>
-                  Provider Details
-                </Text>
-              </TouchableOpacity>
-            </View>
-                      {/* About */}
-                      <View style={{ flex: 1, marginTop: SIZES.padding,paddingHorizontal: SIZES.padding, }}>
-                        <Text style={{ color: COLORS.white, ...FONTS.h2 }}>About</Text>
-                        <ScrollView style={{ flex: 1, padding: 10 }}>
-                        <Text
-                          style={{
-                            marginTop: SIZES.radius,
-                            color: COLORS.white,
-                            ...FONTS.body3,
-                          }}>
-                              <HTMLView value={preprocessHTML(data.description)} stylesheet={htmlStyles} />
-                        </Text>
-                         </ScrollView>
-                      </View>
-          </View>
+        <ScrollView style={{ flex: 1, paddingTop: 30, paddingHorizontal: 20 }} showsVerticalScrollIndicator={false}>
+          {selectedTab === 'Overview' ? (
+    <View style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
+        <HTMLView
+          value={'<h1>Hello World</h1><p>This is a paragraph.</p>'}
+          stylesheet={{
+            p: { color: 'red' }, // Example styling
+          }}
+        />
+      </ScrollView>
+    </View>
+          ) : (
+            <Text>PROVIDER</Text>
+          )}
+          <LineDivider />
         </ScrollView>
       </View>
+    );
+  }
 
-      {/* Footer */}
-      <View style={{ flex: 0.5, paddingHorizontal: SIZES.padding }}>
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-          {data.is_active === 1 ? (
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                backgroundColor: COLORS.bgRed,
-                padding: SIZES.padding1,
-                borderRadius: 20,
-                alignItems: 'center',
-              }}
-              onPress={handleBookService}>
-              <Text
-                style={{
-                  color: COLORS.white,
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                }}>
-                BOOK SERVICE
-              </Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
-      </View>
+  function renderBottomButton() {
+    const getDiscountedPrice = (price, discount) => {
+      if (discount.discount_amount_type === 'amount') {
+        return price - discount.discount_amount;
+      } else if (discount.discount_amount_type === 'percent') {
+        return price - (price * discount.discount_amount) / 100;
+      }
+      return price;
+    };
 
-      {/* Modal */}
-      <Modal visible={modalVisible} animationType="slide">
-        <View
+    const discountedPrice =
+      book.service_discount.length > 0
+        ? getDiscountedPrice(
+            book.min_bidding_price,
+            book.service_discount[0].discount
+          )
+        : book.min_bidding_price;
+    return (
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        <TouchableOpacity
+          style={{
+            width: 100,
+            backgroundColor: COLORS.secondary,
+            marginLeft: SIZES.padding,
+            marginVertical: SIZES.base,
+            borderRadius: SIZES.radius,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {book.service_discount.length > 0 &&
+          book.service_discount[0].discount.is_active === 1 ? (
+            <Text style={{ ...FONTS.h3, color: COLORS.white }}>
+              TZS {discountedPrice.toFixed(2)}
+            </Text>
+          ) : (
+            <Text style={{ ...FONTS.h3, color: COLORS.white }}>
+              TZS {book.min_bidding_price}
+            </Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={{
             flex: 1,
-            padding: 16,
+            backgroundColor: COLORS.primary,
+            marginHorizontal: SIZES.base,
+            marginVertical: SIZES.base,
+            borderRadius: SIZES.radius,
+            alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'pink',
-          }}>
-          <Text style={{ fontSize: 18, marginBottom: 16 }}>Book Service</Text>
-          <Text style={{ fontSize: 16, marginBottom: 8 }}>
-            Service ID: {data.id}
-          </Text>
-          <Text style={{ fontSize: 16, marginBottom: 8 }}>
-            Discount Amount: {data.service_discount[0].discount.discount_amount}
-            %
-          </Text>
-          <Text style={{ fontSize: 16, marginBottom: 8 }}>
-            Choose Address for Service:
-          </Text>
-          <Text style={{ fontSize: 16, marginBottom: 8 }}>
-            Choose Time: ASAP
-          </Text>
-          <Button
-            title="Request Service"
-            onPress={handleRequestService}
-            style={{ padding: 10 }}
-          />
-          <Button title="Close" onPress={() => setModalVisible(false)} />
-        </View>
-      </Modal>
-    </View>
-  );
+          }}
+          onPress={handleBookService}
+        >
+          <Text style={{ ...FONTS.h3, color: COLORS.white }}>BOOK SERVICE</Text>
+        </TouchableOpacity>
+
+        <Modal visible={modalVisible} animationType="slide">
+          <View
+            style={{
+              flex: 1,
+              padding: 16,
+              justifyContent: 'center',
+              backgroundColor: 'pink',
+            }}
+          >
+            <Text style={{ fontSize: 18, marginBottom: 16 }}>Book Service</Text>
+            <Text style={{ fontSize: 16, marginBottom: 8 }}>
+              Service ID: {book.id}
+            </Text>
+            <Text style={{ fontSize: 16, marginBottom: 8 }}>
+              Discount Amount:{' '}
+              {book.service_discount[0].discount.discount_amount}%
+            </Text>
+            <Text style={{ fontSize: 16, marginBottom: 8 }}>
+              Choose Address for Service:
+            </Text>
+            <Text style={{ fontSize: 16, marginBottom: 8 }}>
+              Choose Time: ASAP
+            </Text>
+            <Button title="Request Service" onPress={handleRequestService} />
+            <Button title="Close" onPress={() => setModalVisible(false)} />
+          </View>
+        </Modal>
+      </View>
+    );
+  }
+
+  if (book) {
+    return (
+      <View style={{ flex: 1, backgroundColor: COLORS.khak }}>
+        <View style={{ flex: 4 }}>{renderBookInfoSection()}</View>
+        <View style={{ flex: 4 }}>{renderBookDescription()}</View>
+        <View style={{ height: 70, marginBottom: 30 }}>{renderBottomButton()}</View>
+      </View>
+    );
+  } else {
+    return null;
+  }
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 4,
-    backgroundColor: COLORS.black,
-  },
   shadow: {
-    borderRadius: 25,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-});
-
-const htmlStyles = StyleSheet.create({
-  h3: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    margin: 0,
-    padding: 0,
-    color:"white",
-  },
-  p: {
-    fontSize: 12,
-    margin: 0,
-    padding: 0,
-    lineHeight: 14,
-        color:"white",
-  },
-  ul: {
-    margin: 0,
-    padding: 0,
-        color:"white",
-  },
-  li: {
-    fontSize: 12,
-    margin: 0,
-    padding: 0,
-    lineHeight: 14,
-        color:"white",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
 });
 

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  StyleSheet,
   FlatList,
   Dimensions,
   StatusBar,
@@ -71,8 +72,6 @@ export default function HomeScreen({ navigation, name }) {
   const [totalTrending, setTotalTrending] = React.useState(0);
 
   useEffect(() => {
-
-    
     const handleBanner = async () => {
       try {
         const params = {
@@ -179,158 +178,164 @@ export default function HomeScreen({ navigation, name }) {
     /* END CATEGORY */
   }
 
-const ServiceCard = ({ data }) => {
-
-  const getDiscountedPrice = (price, discount) => {
-    if (discount.discount_amount_type === 'amount') {
-      return price - discount.discount_amount;
-    } else if (discount.discount_amount_type === 'percent') {
-      return price - (price * discount.discount_amount / 100);
-    }
-    return price;
-  };
-
-  const getDiscountPercentage = (price, discount) => {
-    if (discount.discount_amount_type === 'amount') {
-      return ((discount.discount_amount / price) * 100).toFixed(0);
-    }
-    return discount.discount_amount;
-  };
-
-  const discountedPrice = data.service_discount.length > 0 
-    ? getDiscountedPrice(data.min_bidding_price, data.service_discount[0].discount) 
-    : data.min_bidding_price;
-
-  return (
-    <TouchableOpacity
-      activeOpacity={1}
-      onPress={() =>
-        navigation.navigate('ServiceScreen', { data })
+  const ServiceCard = ({ data }) => {
+    const getDiscountedPrice = (price, discount) => {
+      if (discount.discount_amount_type === 'amount') {
+        return price - discount.discount_amount;
+      } else if (discount.discount_amount_type === 'percent') {
+        return price - (price * discount.discount_amount) / 100;
       }
-      style={{
-        width: '48%',
-        marginVertical: 14,
-        borderRadius: 25,
-      }}>
-      <View
+      return price;
+    };
+
+    const getDiscountPercentage = (price, discount) => {
+      if (discount.discount_amount_type === 'amount') {
+        return ((discount.discount_amount / price) * 100).toFixed(0);
+      }
+      return discount.discount_amount;
+    };
+
+    const discountedPrice =
+      data.service_discount.length > 0
+        ? getDiscountedPrice(
+            data.min_bidding_price,
+            data.service_discount[0].discount
+          )
+        : data.min_bidding_price;
+
+    return (
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={() => navigation.navigate('ServiceScreen', { data })}
         style={{
-          width: '100%',
-          height: 100,
+          width: '48%',
+          marginVertical: 14,
           borderRadius: 25,
-          position: 'relative',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginBottom: 8,
         }}>
-        <Image
-          source={{ uri: data.thumbnail_full_path }}
+        <View
           style={{
             width: '100%',
-            height: '100%',
-            resizeMode: 'cover',
+            height: 100,
             borderRadius: 25,
-          }}
-        />
+            position: 'relative',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: 8,
+          }}>
+          <Image
+            source={{ uri: data.thumbnail_full_path }}
+            style={{
+              width: '100%',
+              height: '100%',
+              resizeMode: 'cover',
+              borderRadius: 25,
+            }}
+          />
+          {data.service_discount.length > 0 &&
+          data.service_discount[0].discount.is_active === 1 ? (
+            <View
+              style={{
+                position: 'absolute',
+                width: '20%',
+                height: '24%',
+                backgroundColor: COLORS.bgRed,
+                top: 0,
+                left: 0,
+                borderTopLeftRadius: 10,
+                borderBottomRightRadius: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: COLORS.white,
+                  fontWeight: 'bold',
+                  letterSpacing: 1,
+                }}>
+                {getDiscountPercentage(
+                  data.min_bidding_price,
+                  data.service_discount[0].discount
+                )}
+                %
+              </Text>
+            </View>
+          ) : null}
+        </View>
+        <Text
+          style={{
+            fontSize: 12,
+            color: COLORS.black,
+            fontWeight: '600',
+            marginBottom: 2,
+          }}>
+          {data.name}
+        </Text>
+        {data.rating_count === '0' ? (
+          data.is_active === '1' ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <FontAwesome
+                name="circle"
+                style={{
+                  fontSize: 12,
+                  marginRight: 6,
+                  color: COLORS.lightgreen,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: COLORS.lightgreen,
+                }}>
+                Available
+              </Text>
+            </View>
+          ) : (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <FontAwesome
+                name="circle"
+                style={{
+                  fontSize: 12,
+                  marginRight: 6,
+                  color: COLORS.lightRed,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: COLORS.lightRed,
+                }}>
+                Unavailable
+              </Text>
+            </View>
+          )
+        ) : null}
         {data.service_discount.length > 0 &&
         data.service_discount[0].discount.is_active === 1 ? (
-          <View
-            style={{
-              position: 'absolute',
-              width: '20%',
-              height: '24%',
-              backgroundColor: COLORS.bgRed,
-              top: 0,
-              left: 0,
-              borderTopLeftRadius: 10,
-              borderBottomRightRadius: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+          <View>
             <Text
               style={{
-                fontSize: 12,
-                color: COLORS.white,
-                fontWeight: 'bold',
-                letterSpacing: 1,
+                textDecorationLine: 'line-through',
+                color: COLORS.lightRed,
               }}>
-              {getDiscountPercentage(data.min_bidding_price, data.service_discount[0].discount)}%
+              TZS {data.min_bidding_price}
             </Text>
-          </View>
-        ) : null}
-      </View>
-      <Text
-        style={{
-          fontSize: 12,
-          color: COLORS.black,
-          fontWeight: '600',
-          marginBottom: 2,
-        }}>
-        {data.name}
-      </Text>
-      {data.rating_count === '0' ? (
-        data.is_active === '1' ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <FontAwesome
-              name="circle"
-              style={{
-                fontSize: 12,
-                marginRight: 6,
-                color: COLORS.lightgreen,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: 12,
-                color: COLORS.lightgreen,
-              }}>
-              Available
-            </Text>
+            <Text style={{ color: COLORS.black }}>TZS {discountedPrice}</Text>
           </View>
         ) : (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <FontAwesome
-              name="circle"
-              style={{
-                fontSize: 12,
-                marginRight: 6,
-                color: COLORS.lightRed,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: 12,
-                color: COLORS.lightRed,
-              }}>
-              Unavailable
-            </Text>
-          </View>
-        )
-      ) : null}
-      {data.service_discount.length > 0 && data.service_discount[0].discount.is_active === 1 ? (
-        <View>
-          <Text style={{ textDecorationLine: 'line-through', color: COLORS.lightRed }}>
-            TZS {data.min_bidding_price}
-          </Text>
-          <Text style={{ color: COLORS.black }}>
-            TZS {discountedPrice}
-          </Text>
-        </View>
-      ) : (
-        <Text style={{ color: COLORS.black }}>
-          TZS {discountedPrice}
-        </Text>
-      )}
-    </TouchableOpacity>
-  );
-};
+          <Text style={{ color: COLORS.black }}>TZS {discountedPrice}</Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
 
   const names = [];
 
@@ -340,75 +345,54 @@ const ServiceCard = ({ data }) => {
 
   function renderHeader(profile) {
     return (
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          paddingHorizontal: SIZES.padding,
-          alignItems: 'center',
-        }}>
-        {/* Greetings */}
-        <View style={{ flex: 1 }}>
+     <View style={{ flexDirection: 'row', height: 50 }}>
+        <TouchableOpacity
+          style={{
+            width: 50,
+            paddingLeft: SIZES.padding * 2,
+            justifyContent: 'center',
+          }}>
+          <Image
+            source={icons.nearby}
+            resizeMode="contain"
+            style={{
+              width: 30,
+              height: 30,
+            }}
+          />
+        </TouchableOpacity>
+
+        <View
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <View
             style={{
-              marginRight: SIZES.padding,
-              flexDirection: 'row',
+              width: '70%',
+              height: '100%',
+              backgroundColor: COLORS.bgRed,
               alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: SIZES.radius,
             }}>
-            <Image
-              source={icons.location}
-              resizeMode="contain"
-              style={{
-                width: 25,
-                tintColor: COLORS.black,
-                height: 25,
-              }}
-            />
             <Text style={{ ...FONTS.h3, color: COLORS.black }}>
               Sinza, Dar-es-Salaam
             </Text>
           </View>
         </View>
 
-        {/* Points */}
         <TouchableOpacity
           style={{
-            backgroundColor: COLORS.black,
-            height: 40,
-            paddingLeft: 3,
-            paddingRight: 3,
-            paddingTop: 3,
-            paddingBottom: 3,
-            borderRadius: 40,
-          }}
-          onPress={() => navigation.navigate('Login')}>
-          <View
+            width: 50,
+            paddingRight: SIZES.padding * 2,
+            justifyContent: 'center',
+          }}onPress={() => navigation.navigate('Login')}>
+          <Image
+            source={icons.user}
+            resizeMode="contain"
             style={{
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <View
-              style={{
-                width: 33,
-                height: 33,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 33,
-                backgroundColor: COLORS.black,
-              }}>
-              <Image
-                source={icons.profile}
-                resizeMode="contain"
-                style={{
-                  width: 20,
-                  tintColor: COLORS.white,
-                  height: 20,
-                }}
-              />
-            </View>
-          </View>
+              width: 30,
+              height: 30,
+            }}
+          />
         </TouchableOpacity>
       </View>
     );
@@ -448,12 +432,9 @@ const ServiceCard = ({ data }) => {
                 margin: 5, // Adjust margin as needed
                 alignItems: 'center', // Center content within TouchableOpacity
                 justifyContent: 'center', // Center content within TouchableOpacity
+                  ...styles.shadow,
               }}
-              onPress={() =>
-                navigation.navigate('', {
-                  category: category,
-                })
-              }>
+              onPress={() => navigation.navigate('CategoryScreen', {categoryId: category.id,title: category.name})}>
               {/* House Cover */}
               <Image
                 source={{ uri: category.image_full_path }}
@@ -521,7 +502,7 @@ const ServiceCard = ({ data }) => {
               {totalCategory}
             </Text>
           </View>
-          <TouchableOpacity onPress={() => console.log('See More')}>
+          <TouchableOpacity onPress={() => navigation.navigate('CategoryScreen', {title: "All"})}>
             <Text
               style={{
                 fontSize: 14,
@@ -568,7 +549,7 @@ const ServiceCard = ({ data }) => {
                 letterSpacing: 1,
                 marginBottom: 10,
               }}>
-              Hi-Fi Shop &amp; Service
+              Expert Help &amp; Services
             </Text>
             <Text
               style={{
@@ -578,8 +559,8 @@ const ServiceCard = ({ data }) => {
                 letterSpacing: 1,
                 lineHeight: 24,
               }}>
-              Audio shop on Rustaveli Ave 57.
-              {'\n'}This shop offers both products and services
+              Seamless Access to Professional Services.
+              {'\n'}Get quality service from vetted professionals in your area.
             </Text>
           </View>
 
@@ -782,7 +763,7 @@ const ServiceCard = ({ data }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.khak }}>
       {/* Header Section */}
-      <View style={{ height: 40, paddingTop: SIZES.padding }}>
+      <View style={{paddingTop: SIZES.padding }}>
         {renderHeader(profile)}
       </View>
 
@@ -802,3 +783,16 @@ const ServiceCard = ({ data }) => {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+});

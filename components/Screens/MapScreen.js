@@ -14,8 +14,16 @@ import { COLORS } from '../Utls';
 
 const MapScreen = () => {
   return (
-    <SafeAreaView style={{ alignContent:'center', justifyContent: 'center', flex: 1, backgroundColor: COLORS.khak }}>
-      <Text style={{ textAlign:'center', fontWeight: "bold", fontSize: 50}}>MAP HERE</Text>
+    <SafeAreaView
+      style={{
+        alignContent: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        backgroundColor: COLORS.khak,
+      }}>
+      <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 50 }}>
+        MAP HERE
+      </Text>
     </SafeAreaView>
   );
 };
